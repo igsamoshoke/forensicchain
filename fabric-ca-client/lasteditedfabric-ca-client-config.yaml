@@ -1,0 +1,59 @@
+#############################################################################
+#   Fabric CA Client Configuration File
+#############################################################################
+
+# URL of the Fabric-ca-server
+url: https://localhost:7054
+
+# Membership Service Provider (MSP) directory
+mspdir: /home/fabric/fabric-samples/fabric-ca-client/admin/msp
+
+#############################################################################
+#    TLS section for secure socket connection
+#############################################################################
+tls:
+  certfiles:
+    - /home/fabric/fabric-samples/test-network/organizations/fabric-ca/org1/tls-cert.pem
+  client:
+    certfile:
+    keyfile:
+
+#############################################################################
+#  Certificate Signing Request section for generating the CSR
+#############################################################################
+csr:
+  cn: admin
+  keyrequest:
+    algo: ecdsa
+    size: 256
+    reusekey: false
+  names:
+    - C: US
+      ST: North Carolina
+      L: Raleigh
+      O: Hyperledger
+      OU: Fabric
+  hosts:
+    - localhost
+    - ubuntu
+
+#############################################################################
+#  Name of the CA to connect to within the fabric-ca server
+#############################################################################
+caname: ca-org1
+
+#############################################################################
+# BCCSP (BlockChain Crypto Service Provider) section
+#############################################################################
+bccsp:
+  default: SW
+  sw:
+    hash: SHA2
+    security: 256
+    filekeystore:
+      keystore: msp/keystore
+
+#############################################################################
+# Idemix curve ID specifies the Elliptic Curve used by Identity Mixer.
+#############################################################################
+idemixCurveID: amcl.Fp256bn

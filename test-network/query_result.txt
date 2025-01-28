@@ -1,0 +1,2 @@
+Installed chaincodes on peer:
+Package ID: coc_chain_v1:56b63c14e824ff72e33f40c205427c00b22adab5d6074747b823268e94f282c3, Label: coc_chain_v1
