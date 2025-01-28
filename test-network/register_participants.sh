@@ -1,50 +1,23 @@
 #!/bin/bash
 
-echo "Registering participants on the blockchain..."
+echo "Registering Org1 participant as FirstResponder..."
+peer chaincode invoke \
+  -o localhost:7050 \
+  --ordererTLSHostnameOverride orderer.example.com \
+  --tls --cafile "$PWD/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem" \
+  -C mychannel -n coc_chain \
+  --peerAddresses localhost:7051 --tlsRootCertFiles $PWD/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt \
+  --peerAddresses localhost:9051 --tlsRootCertFiles $PWD/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt \
+  -c '{"function":"RegisterParticipant","Args":["x509::CN=org1admin,OU=admin,O=Hyperledger,ST=North Carolina,C=US::CN=ca.org1.example.com,O=org1.example.com,L=Durham,ST=North Carolina,C=US", "FirstResponder"]}'
 
-# Define the participant data
-participants=(
-  "Org1MSP.participant1 firstresponder"
-  "Org2MSP.participant2 secondinvestigator"
-  "Org1MSP.participant3 prosecutor"
-  "Org1MSP.participant4 defense"
-  "Org2MSP.participant5 court"
-)
+echo "Registering Org2 participant as SecondInvestigator..."
+peer chaincode invoke \
+  -o localhost:7050 \
+  --ordererTLSHostnameOverride orderer.example.com \
+  --tls --cafile "$PWD/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem" \
+  -C mychannel -n coc_chain \
+  --peerAddresses localhost:7051 --tlsRootCertFiles $PWD/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt \
+  --peerAddresses localhost:9051 --tlsRootCertFiles $PWD/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt \
+  -c '{"function":"RegisterParticipant","Args":["x509::CN=org2admin,OU=admin,O=Hyperledger,ST=North Carolina,C=US::CN=ca.org2.example.com,O=org2.example.com,L=Hursley,ST=Hampshire,C=UK", "SecondInvestigator"]}'
 
-# Common arguments for invoking the chaincode
-ORDERER="localhost:7050"
-ORDERER_TLS_HOSTNAME="orderer.example.com"
-CAFILE="$PWD/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem"
-CHANNEL="mychannel"
-CHAINCODE_NAME="coc_chain"
-PEER1_ADDRESS="localhost:7051"
-PEER1_TLS_CERT="$PWD/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt"
-PEER2_ADDRESS="localhost:9051"
-PEER2_TLS_CERT="$PWD/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt"
-
-# Loop through the participants and invoke the chaincode for each
-for participant in "${participants[@]}"; do
-  IFS=' ' read -r MSP_ID ROLE <<< "$participant"
-
-  echo "Registering participant: $MSP_ID with role: $ROLE"
-  
-  peer chaincode invoke \
-    -o "$ORDERER" \
-    --ordererTLSHostnameOverride "$ORDERER_TLS_HOSTNAME" \
-    --tls --cafile "$CAFILE" \
-    -C "$CHANNEL" -n "$CHAINCODE_NAME" \
-    --peerAddresses "$PEER1_ADDRESS" --tlsRootCertFiles "$PEER1_TLS_CERT" \
-    --peerAddresses "$PEER2_ADDRESS" --tlsRootCertFiles "$PEER2_TLS_CERT" \
-    -c "{\"function\":\"RegisterParticipant\",\"Args\":[\"$MSP_ID\", \"$ROLE\"]}"
-
-  if [ $? -eq 0 ]; then
-    echo "Successfully registered $MSP_ID as $ROLE."
-  else
-    echo "Failed to register $MSP_ID as $ROLE."
-    exit 1
-  fi
-
-  echo "--------------------------------------"
-done
-
-echo "All participants registered successfully!"
+echo "Participant registration completed."

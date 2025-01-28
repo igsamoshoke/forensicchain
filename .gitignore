@@ -26,7 +26,7 @@ target
 # installed Fabric binaries etc.
 /bin/
 builders/
-config/
+#(i added this)config/
 external-chaincode/
 install-fabric.sh
 
